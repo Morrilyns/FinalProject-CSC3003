@@ -1,5 +1,6 @@
 module CurveFitting
 
+<<<<<<< HEAD
 export generate_data, gaussian_model, fit_curve, plot_fit
 
 using LsqFit, CairoMakie
@@ -33,3 +34,59 @@ end
 
 end # module CurveFitting
  
+=======
+export generate_data, custom_fit_gaussian, plot_fit
+
+using CairoMakie
+
+# Generate noisy Gaussian data
+"""
+    generate_data(x::Vector{Float64}; a::Float64, μ::Float64, σ::Float64, noise_level::Float64) -> (x, y)
+
+Generates Gaussian data with optional noise.  
+`a`: Amplitude, `μ`: Mean, `σ`: Standard deviation, `noise_level`: Controls noise magnitude.
+"""
+function generate_data(x::Vector{Float64}; a::Float64, μ::Float64, σ::Float64, noise_level::Float64=0.0)
+    y = a .* exp.(-((x .- μ).^2) ./ (2 * σ^2)) .+ noise_level .* randn(length(x))
+    return x, y
+end
+
+# Custom Gaussian Curve Fitting
+"""
+    custom_fit_gaussian(x::Vector{Float64}, y::Vector{Float64}) -> (parameters, error)
+
+Fits a Gaussian curve manually using least squares approximation.  
+Returns the approximate parameters `[a, μ, σ]` and the error.
+"""
+function custom_fit_gaussian(x::Vector{Float64}, y::Vector{Float64})
+    a = maximum(y)                   # Initial guess: amplitude
+    μ = sum(x .* y) / sum(y)         # Estimate the mean
+    σ = sqrt(sum((x .- μ).^2 .* y) / sum(y))  # Estimate the standard deviation
+
+    # Calculate residual error
+    model = a .* exp.(-((x .- μ).^2) ./ (2 * σ^2))
+    residuals = y .- model
+    error = sum(residuals.^2)
+    return [a, μ, σ], error
+end
+
+# Plot Gaussian Curve Fit
+"""
+    plot_fit(x::Vector{Float64}, y::Vector{Float64}, params::Vector{Float64})
+
+Plots the original data points and the fitted Gaussian curve.
+"""
+function plot_fit(x::Vector{Float64}, y::Vector{Float64}, params::Vector{Float64})
+    a, μ, σ = params
+    fitted_y = a .* exp.(-((x .- μ).^2) ./ (2 * σ^2))
+
+    fig = Figure()
+    ax = Axis(fig[1, 1], title="Gaussian Curve Fitting", xlabel="x", ylabel="y")
+    scatter!(x, y, label="Data", color=:blue)
+    lines!(x, fitted_y, label="Fitted Curve", color=:red)
+    axislegend()
+    display(fig)
+end
+
+end
+>>>>>>> a7c456f (Updated custom polynomial fitting function and implemented professor's feedback)

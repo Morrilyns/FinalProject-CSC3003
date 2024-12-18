@@ -1,5 +1,6 @@
 module PolynomialFitting
 
+<<<<<<< HEAD
 export generate_polynomial_data, fit_polynomial, plot_polynomial, test_polynomial
 
 using LsqFit, CairoMakie
@@ -60,4 +61,58 @@ function test_polynomial()
 end
 
 end # module PolynomialFitting
+=======
+export generate_polynomial_data, custom_fit_polynomial, plot_polynomial
+
+using CairoMakie
+
+# Generate noisy polynomial data
+"""
+    generate_polynomial_data(x::Vector{Float64}, coefficients::Vector{Float64}; noise_level::Float64=0.0)
+
+Generates polynomial data given coefficients, with optional noise.
+"""
+function generate_polynomial_data(x::Vector{Float64}, coefficients::Vector{Float64}; noise_level::Float64=0.0)
+    y = sum(c .* x.^(i-1) for (i, c) in enumerate(coefficients)) .+ noise_level .* randn(length(x))
+    return x, y
+end
+
+# Custom Polynomial Fitting
+"""
+    custom_fit_polynomial(x::Vector{Float64}, y::Vector{Float64}, degree::Int) -> Vector{Float64}
+
+Fits a polynomial to the data using the least squares method.  
+Returns the coefficients of the polynomial.
+"""
+function custom_fit_polynomial(x::Vector{Float64}, y::Vector{Float64}, degree::Int)
+    # Create the Vandermonde matrix for the polynomial fitting
+    A = hcat([x .^ i for i in 0:degree]...)  # Each column is x^i (Vandermonde matrix)
+    
+    # Solve for the coefficients using least squares (A \ y)
+    coefficients = A \ y
+    
+    return coefficients
+end
+
+
+# Plot Polynomial Fit
+"""
+    plot_polynomial(x::Vector{Float64}, y::Vector{Float64}, coefficients::Vector{Float64})
+
+Plots the original data points and the fitted polynomial curve.
+"""
+function plot_polynomial(x::Vector{Float64}, y::Vector{Float64}, coefficients::Vector{Float64})
+    fitted_y = sum(c .* x.^(i-1) for (i, c) in enumerate(coefficients))
+
+    fig = Figure()
+    ax = Axis(fig[1, 1], title="Polynomial Curve Fitting", xlabel="x", ylabel="y")
+    scatter!(x, y, label="Data", color=:green)
+    lines!(x, fitted_y, label="Fitted Polynomial", color=:orange)
+    axislegend()
+    display(fig)
+end
+
+end
+
+>>>>>>> a7c456f (Updated custom polynomial fitting function and implemented professor's feedback)
  
